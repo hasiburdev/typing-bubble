@@ -17,7 +17,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_WIDTH = 900;
     static final int SCREEN_HEIGHT = 600;
     static final int BUBBLE_SIZE = 50;
-    static final int BUBBLE_COUNT = 10;
+    static final int BUBBLE_COUNT = 6;
     static final int DELAY_TIME = 75;
 
     boolean running = false;
@@ -80,6 +80,7 @@ public class GamePanel extends JPanel implements ActionListener {
         drawGrid(g);
         drawBubbles(g);
         showInformation(g);
+        gameOver(g);
     }
 
     public void moveBubble() {
@@ -93,7 +94,7 @@ public class GamePanel extends JPanel implements ActionListener {
         for (Bubble bubble : bubbles) {
             if (bubble.checkCollision()) {
                 remaingLife--;
-                System.out.println("Life: " + remaingLife);
+                bubble.hideBubble();
             }
         }
 
@@ -112,6 +113,30 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void gameOver(Graphics g) {
+        if (isGameOver()) {
+            g.setFont(new Font("Monospace", Font.BOLD, 50));
+            g.setColor(Color.MAGENTA);
+
+            int width = g.getFontMetrics().stringWidth("Game Over");
+            int height = g.getFontMetrics().getHeight();
+            g.drawString("Game Over", SCREEN_WIDTH / 2 - width / 2, SCREEN_HEIGHT / 2 - height / 2);
+        }
+    }
+
+    public boolean isGameOver() {
+        return !running;
+    }
+
+    public void checkKeyTyped(KeyEvent e) {
+        for (Bubble bubble : bubbles) {
+            if (bubble.letter.equals(String.valueOf(e.getKeyChar())) && bubble.positionY > 0) {
+                score++;
+                bubble.hideBubble();
+                return;
+            }
+        }
+
+        remaingLife--;
     }
 
     @Override
@@ -124,21 +149,16 @@ public class GamePanel extends JPanel implements ActionListener {
         repaint();
 
         if (!running) {
+
             timer.stop();
+
         }
     }
 
     public class InnerKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_LEFT:
-                    System.out.println("Left");
-                    break;
-
-                default:
-                    break;
-            }
+            checkKeyTyped(e);
         }
     }
 }
