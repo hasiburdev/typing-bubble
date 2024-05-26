@@ -19,18 +19,21 @@ public class Bubble {
     // string of all uppercase and lowercase letters
     String[] lettersHard = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
+    // string of all letters and numbers
+    String[] lettersNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+
     Random random;
 
     Bubble() {
         random = new Random();
-        letter = letters[random.nextInt(letters.length)];
+        letter = lettersNumbers[random.nextInt(lettersNumbers.length)];
 
         showBubble = true;
 
         positionX = random.nextInt(900 - BUBBLE_RADIUS * 2) + BUBBLE_RADIUS;
         positionY = random.nextInt(200) - 100;
         velocityY = 3;
-        acceleration = 0;
+        acceleration = 2;
     }
 
     public void draw(Graphics g) {
@@ -45,13 +48,13 @@ public class Bubble {
 
     public void update() {
         positionY += velocityY;
-        velocityY += acceleration;
+        // velocityY += acceleration;
     }
 
     public boolean checkCollision() {
         if (positionY > 600) {
             positionY = -100;
-            velocityY += 1;
+            velocityY += acceleration;
             showBubble = false;
             return true;
         }
@@ -60,7 +63,7 @@ public class Bubble {
 
     public void hideBubble() {
         positionY = -100;
-        velocityY += 1;
+        velocityY += acceleration;
         showBubble = false;
     }
 

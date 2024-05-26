@@ -33,7 +33,7 @@ public class GamePanel extends JPanel implements ActionListener {
     GamePanel() {
 
         random = new Random();
-        backgroundImage = new ImageIcon(getClass().getResource("./assets/background.jpg")).getImage();
+        backgroundImage = new ImageIcon(getClass().getResource("./assets/bg.jpg")).getImage();
 
         for (int i = 0; i < BUBBLE_COUNT; i++) {
             bubbles[i] = new Bubble();
