@@ -17,7 +17,7 @@ public class GamePanel extends JPanel implements ActionListener {
     static final int SCREEN_WIDTH = 900;
     static final int SCREEN_HEIGHT = 600;
     static final int BUBBLE_SIZE = 50;
-    static final int BUBBLE_COUNT = 6;
+    static final int BUBBLE_COUNT = 3;
     static final int DELAY_TIME = 75;
 
     boolean running = false;
@@ -27,6 +27,7 @@ public class GamePanel extends JPanel implements ActionListener {
     int remaingLife = 5;
     int score = 0;
     int target = 40;
+    boolean isShiftPressed = false;
 
     Bubble[] bubbles = new Bubble[BUBBLE_COUNT];
 
@@ -128,7 +129,14 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void checkKeyTyped(KeyEvent e) {
+
+        if (e.getKeyCode() == 16 || e.getKeyCode() == 20) {
+            isShiftPressed = true;
+            return;
+        }
+
         for (Bubble bubble : bubbles) {
+
             if (bubble.letter.equals(String.valueOf(e.getKeyChar())) && bubble.positionY > 0) {
                 score++;
                 bubble.hideBubble();

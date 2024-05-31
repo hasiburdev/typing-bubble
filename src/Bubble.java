@@ -21,6 +21,7 @@ public class Bubble {
 
     // string of all letters and numbers
     String[] lettersNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+    // String[] lettersNumbers = "cC".split("");
 
     Random random;
 
@@ -63,6 +64,7 @@ public class Bubble {
 
     public void hideBubble() {
         positionY = -100;
+        letter = lettersNumbers[random.nextInt(lettersNumbers.length)];
         velocityY += acceleration;
         showBubble = false;
     }
