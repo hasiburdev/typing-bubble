@@ -1,7 +1,3 @@
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,44 +7,41 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Random;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
-public class GamePanel extends JPanel implements ActionListener {
+public class GameLevel extends JPanel implements ActionListener {
 
-    static final int SCREEN_WIDTH = 900;
-    static final int SCREEN_HEIGHT = 600;
-    static final int BUBBLE_SIZE = 50;
-    static final int BUBBLE_COUNT = 30;
-    static final int DELAY_TIME = 75;
-
-    boolean running = false;
     Timer timer;
     Random random;
     Image backgroundImage;
+
+    boolean running = false;
     int remaingLife = 5;
     int score = 0;
     int target = 40;
-    boolean isShiftPressed = false;
 
-    Bubble[] bubbles = new Bubble[BUBBLE_COUNT];
+    String typedString = "";
 
-    GamePanel() {
+    Bubble[] bubbles = new Bubble[Config.BUBBLE_COUNT];
+
+    GameLevel() {
 
         random = new Random();
         backgroundImage = new ImageIcon(getClass().getResource("./assets/bg.jpg")).getImage();
 
-        for (int i = 0; i < BUBBLE_COUNT; i++) {
-            bubbles[i] = new Bubble();
-        }
-
-        this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+        this.setPreferredSize(new Dimension(Config.GAME_WIDTH, Config.GAME_HEIGHT));
         this.setBackground(Color.CYAN);
         this.setFocusable(true);
-
-        System.out.println(this.requestFocusInWindow());
+        this.requestFocusInWindow();
         this.addKeyListener(new InnerKeyAdapter());
 
+        generateBubbles();
         startGame();
+
     }
 
     public void focus() {
@@ -56,15 +49,10 @@ public class GamePanel extends JPanel implements ActionListener {
         requestFocus();
     }
 
-    public void startGame() {
-        running = true;
-        timer = new Timer(DELAY_TIME, this);
-        timer.start();
-    }
-
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        draw(g);
+    public void generateBubbles() {
+        for (int i = 0; i < Config.BUBBLE_COUNT; i++) {
+            bubbles[i] = new Bubble();
+        }
     }
 
     public void showInformation(Graphics g) {
@@ -75,21 +63,14 @@ public class GamePanel extends JPanel implements ActionListener {
         g.drawString("Life: " + remaingLife, 10, 75);
     }
 
-    public void drawGrid(Graphics g) {
-        g.drawImage(backgroundImage, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, null);
+    private void drawGrid(Graphics g) {
+        g.drawImage(backgroundImage, 0, 0, Config.GAME_WIDTH, Config.GAME_HEIGHT, null);
     }
 
     public void drawBubbles(Graphics g) {
         for (Bubble bubble : bubbles) {
             bubble.draw(g);
         }
-    }
-
-    public void draw(Graphics g) {
-        drawGrid(g);
-        drawBubbles(g);
-        showInformation(g);
-        gameOver(g);
     }
 
     public void moveBubble() {
@@ -115,6 +96,18 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+    public void draw(Graphics g) {
+        drawGrid(g);
+        drawBubbles(g);
+        showInformation(g);
+        gameOver(g);
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        draw(g);
+    }
+
     public void checkTarget() {
         if (score >= target) {
             running = false;
@@ -128,7 +121,7 @@ public class GamePanel extends JPanel implements ActionListener {
 
             int width = g.getFontMetrics().stringWidth("Game Over");
             int height = g.getFontMetrics().getHeight();
-            g.drawString("Game Over", SCREEN_WIDTH / 2 - width / 2, SCREEN_HEIGHT / 2 - height / 2);
+            g.drawString("Game Over", Config.GAME_WIDTH / 2 - width / 2, Config.GAME_HEIGHT / 2 - height / 2);
         }
     }
 
@@ -136,27 +129,9 @@ public class GamePanel extends JPanel implements ActionListener {
         return !running;
     }
 
-    public void checkKeyTyped(KeyEvent e) {
-
-        if (e.getKeyCode() == 16 || e.getKeyCode() == 20) {
-            isShiftPressed = true;
-            return;
-        }
-
-        for (Bubble bubble : bubbles) {
-
-            if (bubble.answerText.equals(String.valueOf(e.getKeyChar())) && bubble.positionY > 0) {
-                score++;
-                bubble.hideBubble();
-                return;
-            }
-        }
-
-        remaingLife--;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
+
         moveBubble();
         checkBubbleDrop();
         checkRemainigLife();
@@ -171,10 +146,29 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
+    public void startGame() {
+        running = true;
+        timer = new Timer(Config.DELAY_TIME, this);
+        timer.start();
+    }
+
+    public void checkKeyTyped(KeyEvent event) {
+        System.out.println("Implement this method in the child class");
+    }
+
     public class InnerKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            System.out.println("Key Pressed: " + e.getKeyCode());
+
+            System.out.println("Key Pressed: " + e.getKeyChar());
+
+            String lettersAndNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+            if (lettersAndNumbers.contains(Character.toString(e.getKeyChar()))) {
+                typedString = typedString + e.getKeyChar();
+                // return;
+            }
+
             checkKeyTyped(e);
         }
     }
