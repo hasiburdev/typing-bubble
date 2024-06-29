@@ -39,6 +39,7 @@ public class LevelThree extends GameLevel {
         if (bubbleToMove != null) {
             score++;
 
+            scoreClip.stop();
             scoreClip.setFramePosition(0);
             scoreClip.start();
             scoreClip.loop(0);

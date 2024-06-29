@@ -44,6 +44,7 @@ public class LevelTwo extends GameLevel {
                 typedString = "";
                 bubbleToMove.hideBubble();
 
+                scoreClip.stop();
                 scoreClip.setFramePosition(0);
                 scoreClip.start();
                 scoreClip.loop(0);

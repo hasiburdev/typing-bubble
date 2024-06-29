@@ -43,6 +43,7 @@ public class LevelOne extends GameLevel implements InterfaceLevel {
         if (bubbleToMove != null) {
             score++;
 
+            scoreClip.stop();
             scoreClip.setFramePosition(0);
             scoreClip.start();
             scoreClip.loop(0);
