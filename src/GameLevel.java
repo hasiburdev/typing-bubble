@@ -7,8 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+// import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.Random;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -18,6 +23,10 @@ public class GameLevel extends JPanel implements ActionListener {
     Timer timer;
     Random random;
     Image backgroundImage;
+    Clip backgroundClip;
+    Clip gameOverClip;
+    Clip scoreClip;
+    Clip lifeClip;
 
     boolean running = false;
     int remaingLife = 5;
@@ -38,6 +47,33 @@ public class GameLevel extends JPanel implements ActionListener {
         this.setFocusable(true);
         this.requestFocusInWindow();
         this.addKeyListener(new InnerKeyAdapter());
+
+        try {
+            backgroundClip = AudioSystem.getClip();
+            File file = new File("src/assets/sound/background.wav").getAbsoluteFile();
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(file);
+            backgroundClip.open(inputStream);
+            backgroundClip.start();
+            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY);
+
+            gameOverClip = AudioSystem.getClip();
+            File gameOverFile = new File("src/assets/sound/game-over.wav").getAbsoluteFile();
+            AudioInputStream gameOverInputStream = AudioSystem.getAudioInputStream(gameOverFile);
+            gameOverClip.open(gameOverInputStream);
+
+            scoreClip = AudioSystem.getClip();
+            File scoreFile = new File("src/assets/sound/score.wav").getAbsoluteFile();
+            AudioInputStream scoreInputStream = AudioSystem.getAudioInputStream(scoreFile);
+            scoreClip.open(scoreInputStream);
+
+            lifeClip = AudioSystem.getClip();
+            File lifeFile = new File("src/assets/sound/life.wav").getAbsoluteFile();
+            AudioInputStream lifeInputStream = AudioSystem.getAudioInputStream(lifeFile);
+            lifeClip.open(lifeInputStream);
+
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
 
         generateBubbles();
         startGame();
@@ -61,6 +97,8 @@ public class GameLevel extends JPanel implements ActionListener {
         g.drawString("Score: " + score, 10, 25);
         g.drawString("Target: " + target, 10, 50);
         g.drawString("Life: " + remaingLife, 10, 75);
+
+        // g.drawString("Typed: " + typedString, 10, 570);
     }
 
     private void drawGrid(Graphics g) {
@@ -122,6 +160,9 @@ public class GameLevel extends JPanel implements ActionListener {
             int width = g.getFontMetrics().stringWidth("Game Over");
             int height = g.getFontMetrics().getHeight();
             g.drawString("Game Over", Config.GAME_WIDTH / 2 - width / 2, Config.GAME_HEIGHT / 2 - height / 2);
+
+            backgroundClip.stop();
+            gameOverClip.start();
         }
     }
 
@@ -150,6 +191,7 @@ public class GameLevel extends JPanel implements ActionListener {
         running = true;
         timer = new Timer(Config.DELAY_TIME, this);
         timer.start();
+
     }
 
     public void checkKeyTyped(KeyEvent event) {

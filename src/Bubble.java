@@ -20,7 +20,7 @@ public class Bubble {
 
         positionX = random.nextInt(900 - Config.BUBBLE_RADIUS * 2) + Config.BUBBLE_RADIUS;
         positionY = random.nextInt(300) - 300;
-        velocityY = 3;
+        velocityY = 2;
         acceleration = 1;
 
         generateText();
