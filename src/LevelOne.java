@@ -1,4 +1,8 @@
+import java.awt.Window;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 public class LevelOne extends GameLevel implements InterfaceLevel {
     LevelOne() {
@@ -55,6 +59,20 @@ public class LevelOne extends GameLevel implements InterfaceLevel {
         lifeClip.start();
         lifeClip.loop(0);
         remaingLife--;
+    }
+
+    @Override
+    public void startNextLevel() {
+        JComponent comp = (JComponent) this;
+        Window window = SwingUtilities.getWindowAncestor(comp);
+
+        GameLevel levelTwo = new LevelTwo();
+
+        window.add(levelTwo);
+        setFocusable(false);
+        window.pack();
+
+        levelTwo.focus();
     }
 
 }

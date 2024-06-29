@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -15,7 +16,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class GameLevel extends JPanel implements ActionListener {
@@ -29,9 +32,9 @@ public class GameLevel extends JPanel implements ActionListener {
     Clip lifeClip;
 
     boolean running = false;
-    int remaingLife = 5;
+    int remaingLife = Config.REMAINING_LIFE;
     int score = 0;
-    int target = 40;
+    int target = Config.TARGET;
 
     String typedString = "";
 
@@ -152,17 +155,55 @@ public class GameLevel extends JPanel implements ActionListener {
         }
     }
 
+    public void startNextLevel() {
+        System.out.println("Implement this method in the child class");
+    }
+
+    // public void gameWin
+
     public void gameOver(Graphics g) {
         if (isGameOver()) {
             g.setFont(new Font("Monospace", Font.BOLD, 50));
             g.setColor(Color.MAGENTA);
 
-            int width = g.getFontMetrics().stringWidth("Game Over");
-            int height = g.getFontMetrics().getHeight();
-            g.drawString("Game Over", Config.GAME_WIDTH / 2 - width / 2, Config.GAME_HEIGHT / 2 - height / 2);
+            if (score >= target) {
+                int width = g.getFontMetrics().stringWidth("Congratulations! You Won!");
+                int height = g.getFontMetrics().getHeight();
+                g.drawString("Congratulations! You Won!", Config.GAME_WIDTH / 2 - width / 2,
+                        Config.GAME_HEIGHT / 2 - height / 2);
 
-            backgroundClip.stop();
-            gameOverClip.start();
+                if (this instanceof LevelOne || this instanceof LevelTwo) {
+                    int widthNext = g.getFontMetrics().stringWidth("Proceeding to Next Level...");
+                    int heightNext = g.getFontMetrics().getHeight();
+                    g.drawString("Proceeding to Next Level...", Config.GAME_WIDTH / 2 - widthNext / 2,
+                            Config.GAME_HEIGHT / 2 - heightNext / 2 + 50);
+                }
+
+                backgroundClip.stop();
+                gameOverClip.start();
+
+                int delay = 2000;
+                Timer timer = new Timer(delay, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        System.out.println("Game Won");
+                        startNextLevel();
+
+                    }
+                });
+                timer.setRepeats(false);
+                timer.start();
+
+            } else {
+
+                int width = g.getFontMetrics().stringWidth("Game Over");
+                int height = g.getFontMetrics().getHeight();
+                g.drawString("Game Over", Config.GAME_WIDTH / 2 - width / 2, Config.GAME_HEIGHT / 2 - height / 2);
+
+                backgroundClip.stop();
+                gameOverClip.start();
+            }
+
         }
     }
 
@@ -208,7 +249,6 @@ public class GameLevel extends JPanel implements ActionListener {
 
             if (lettersAndNumbers.contains(Character.toString(e.getKeyChar()))) {
                 typedString = typedString + e.getKeyChar();
-                // return;
             }
 
             checkKeyTyped(e);

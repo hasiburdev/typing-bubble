@@ -1,4 +1,8 @@
+import java.awt.Window;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 public class LevelTwo extends GameLevel {
 
@@ -61,4 +65,19 @@ public class LevelTwo extends GameLevel {
             }
         }
     }
+
+    @Override
+    public void startNextLevel() {
+        JComponent comp = (JComponent) this;
+        Window window = SwingUtilities.getWindowAncestor(comp);
+
+        GameLevel levelThree = new LevelThree();
+
+        window.add(levelThree);
+        setFocusable(false);
+        window.pack();
+
+        levelThree.focus();
+    }
+
 }
